@@ -1,7 +1,3 @@
-% dijkstra(Vertex0, Ss) is true if Ss is a list of structures s(Vertex, Dist,
-%   Path) containing the shortest Path from Vertex0 to Vertex, the distance of
-%   the path being Dist.  The graph is defined by e/3.
-% e.g. dijkstra(penzance, Ss)
 dijkstra(Vertex, Ss):-
   create(Vertex, [Vertex], Ds),
   dijkstra_1(Ds, [s(Vertex,0,[])], Ss).
@@ -19,25 +15,17 @@ dijkstra_1([D|Ds], Ss0, Ss):-
   merge(Ds1, Ds4, Ds5),
   dijkstra_1(Ds5, Ss1, Ss).
 
-% path(Vertex0, Vertex, Path, Dist) is true if Path is the shortest path from
-%   Vertex0 to Vertex, and the length of the path is Dist. The graph is defined
-%   by e/3.
-% e.g. path(penzance, london, Path, Dist)
+
 path(Vertex0, Vertex, Path, Dist):-
   dijkstra(Vertex0, Ss),
   member(s(Vertex,Dist,Path), Ss), !.
   
-% create(Start, Path, Edges) is true if Edges is a list of structures s(Vertex,
-%   Distance, Path) containing, for each Vertex accessible from Start, the
-%   Distance from the Vertex and the specified Path.  The list is sorted by the
-%   name of the Vertex.
+
 create(Start, Path, Edges):-
   setof(s(Vertex,Edge,Path), e(Start,Vertex,Edge), Edges), !.
 create(_, _, []).
   
-% best(Edges, Edge0, Edge) is true if Edge is the element of Edges, a list of
-%   structures s(Vertex, Distance, Path), having the smallest Distance.  Edge0
-%   constitutes an upper bound.
+
 best([], Best, Best).
 best([Edge|Edges], Best0, Best):-
   shorter(Edge, Best0), !,
@@ -47,9 +35,7 @@ best([_|Edges], Best0, Best):-
 
 shorter(s(_,X,_), s(_,Y,_)):-X < Y.
 
-% delete(Xs, Ys, Zs) is true if Xs, Ys and Zs are lists of structures s(Vertex,
-%   Distance, Path) ordered by Vertex, and Zs is the result of deleting from Xs
-%   those elements having the same Vertex as elements in Ys.
+
 delete([], _, []). 
 delete([X|Xs], [], [X|Xs]):-!. 
 delete([X|Xs], [Y|Ys], Ds):-
@@ -60,10 +46,7 @@ delete([X|Xs], [Y|Ys], [X|Ds]):-
 delete([X|Xs], [_|Ys], Ds):-
   delete([X|Xs], Ys, Ds). 
   
-% merge(Xs, Ys, Zs) is true if Zs is the result of merging Xs and Ys, where Xs,
-%   Ys and Zs are lists of structures s(Vertex, Distance, Path), and are
-%   ordered by Vertex.  If an element in Xs has the same Vertex as an element
-%   in Ys, the element with the shorter Distance will be in Zs.
+
 merge([], Ys, Ys). 
 merge([X|Xs], [], [X|Xs]):-!. 
 merge([X|Xs], [Y|Ys], [X|Zs]):-
@@ -82,33 +65,112 @@ eq(s(X,_,_), s(X,_,_)).
 
 lt(s(X,_,_), s(Y,_,_)):-X @< Y.
 
-% incr(Xs, Incr, Ys) is true if Xs and Ys are lists of structures s(Vertex,
-%   Distance, Path), the only difference being that the value of Distance in Ys
-%   is Incr more than that in Xs.
+
 incr([], _, []).  
 incr([s(V,D1,P)|Xs], Incr, [s(V,D2,P)|Ys]):-
   D2 is D1 + Incr,
   incr(Xs, Incr, Ys).
 
-% member(X, Ys) is true if the element X is contained in the list Ys.
-%member(X, [X|_]).
-%member(X, [_|Ys]):-member(X, Ys).
 
-% reverse(Xs, Ys) is true if Ys is the result of reversing the order of the
-%   elements in the list Xs.
-%reverse(Xs, Ys):-reverse_1(Xs, [], Ys).
-
-%reverse_1([], As, As).
-%reverse_1([X|Xs], As, Ys):-reverse_1(Xs, [X|As], Ys).
 
 e(X, Y, Z):-dist(X, Y, Z).
 e(X, Y, Z):-dist(Y, X, Z).
 
-dist(a,b,4).
-dist(a,c,2).
-dist(b,d,2).
-dist(b,e,5).
-dist(c,b,1).
-dist(c,d,4).
-dist(c,e,5).
-dist(e,d,1).
+
+
+
+
+% Train Junction
+dist(phaya_thai, phaya_thai_airlink, 7).
+dist(sukhumvit, asok, 3).
+dist(si_lom,sala_daeng, 5).
+dist(phetchaburi, makkasan, 5).
+dist(tao_poon,tao_poon_purple,2).
+dist(mo_chit,chatuchak_park,5).
+dist(siam,siam_silom_line,5).
+
+% Airport Link
+dist(phaya_thai_airlink,ratchaprarop,5).
+dist(ratchaprarop,makkasan,5).
+dist(makkasan,ramkhamhaeng,5).
+dist(ramkhamhaeng,hua_mak,5).
+dist(hua_mak,ban_thap_chang,5).
+dist(ban_thap_chang,latkrabang,5).
+dist(latkrabang,suvarnabhumi,5).
+
+
+% MRT - Blue Line
+dist(hua_lamphong,sam_yan,2).
+dist(sam_yan,si_lom, 2).
+dist(si_lom, lumphini,2).
+dist(lumphini,khlong_toei,2).
+dist(khlong_toei,queen_sirikit_national_convention_center,2).
+dist(queen_sirikit_national_convention_center,sukhumvit,2).
+dist(sukhumvit,phetchaburi,2).
+dist(phetchaburi,phra_ram_9,2).
+dist(phra_ram_9,thailand_cultural_center,2).
+dist(thailand_cultural_center,huai_khwang,2).
+dist(huai_khwang,sutthisan,2).
+dist(sutthisan,ratchadaphisek,2).
+dist(ratchadaphisek,lat_phrao,2).
+dist(lat_phrao,phahon_yothin,2).
+dist(phahon_yothin,chatuchak_park,2).
+dist(chatuchak_park,kamphaeng_phet,2).
+dist(kamphaeng_phet,bang_sue,2).
+dist(bang_sue,tao_poon,2).
+
+% MRT - Purple Line
+dist(khlong_bang_phai,talad_bang_yai,1).
+dist(talad_bang_yai,sam_yaek,1).
+dist(sam_yaek,bang_yai,1).
+dist(bang_yai,bang_phlu,1).
+dist(bang_phlu,bang_rak_yai,1).
+dist(bang_rak_yai,bang_rak_noi_tha_it,1).
+dist(bang_rak_noi_tha_it,sai_ma,1).
+dist(sai_ma,phra_nang_klao_bridge,1).
+dist(phra_nang_klao_bridge,yaek_nonthaburi1,1).
+dist(yaek_nonthaburi1,bang_krasor,1).
+dist(bang_krasor,nonthaburi_civic_center,1).
+dist(nonthaburi_civic_center,ministry_of_public_health,1).
+dist(ministry_of_public_health,yaek_tiwanon,1).
+dist(yaek_tiwanon,wong_sawang,1).
+dist(wong_sawang,bang_son,1).
+dist(bang_son,tao_poon_purple,1).
+
+%BTS - Silom Line
+dist(national_stadium,siam_silom_line,3).
+dist(siam_silom_line,ratchadamri,3).
+dist(ratchadamri,sala_daeng,3).
+dist(sala_daeng,chong_nonsi,3).
+dist(chong_nonsi,surasak,3).
+dist(surasak,saphan_taksin,3).
+dist(saphan_taksin,krung_thon_buri,3).
+dist(krung_thon_buri,wongwian_yai,3).
+dist(wongwian_yai,pho_nimit,3).
+dist(pho_nimit,talat_phlu,3).
+dist(talat_phlu,wutthakat,3).
+dist(wutthakat,bang_wa,3).
+
+%BTS - Sukhumvit Line
+dist(mo_chit,saphan_kwai,4).
+dist(saphan_kwai,ari,4).
+dist(ari,sanam_pao,4).
+dist(sanam_pao,victory_monument,4).
+dist(victory_monument,phaya_thai,4).
+dist(phaya_thai,ratchathewi,4).
+dist(ratchathewi,siam,4).
+dist(siam,chit_lom,4).
+dist(chit_lom,ploen_chit,4).
+dist(ploen_chit,nana,4).
+dist(nana,asok,4).
+dist(asok,phrom_phong,4).
+dist(phrom_phong,thong_lo,4).
+dist(thong_lo,ekkamai,4).
+dist(ekkamai,phra_khanong,4).
+dist(phra_khanong,on_nut,4).
+dist(on_nut,bang_chak,4).
+dist(bang_chak,punnawithi,4).
+dist(punnawithi,udom_suk,4).
+dist(udom_suk,bang_na,4).
+dist(bang_na,bearing,4).
+dist(bearing,samrong,4).
