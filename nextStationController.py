@@ -3,6 +3,7 @@ from pyswip.easy import getList, registerForeign
 
 def loadDatabase(prolog):
     prolog.consult("shortest_path(TIME).pl")
+    prolog.consult("which_train.pl")
 
 def inputFromTo():
     from_input = str(raw_input("from: "))
@@ -22,6 +23,26 @@ def findShortestPath(from_input, to_input):
 
     for i in range(len(shortest_path_lst[0]['PATH'])):
         path_list.append(str(shortest_path_result[0]['PATH'][i]))
+
+    train_query = "theTrainIs(" + str(path_list) + ",TRAIN)"
+    train_result = list(prolog.query(train_query))
+
+    train_list = []
+    for i in range(len(train_result[0]['TRAIN'])):
+        train_list.append(str(train_result[0]['TRAIN'][i]))
+    
+    path_type_list = []
+    include_walk_query = "includeWalk(" + str(train_list) + ",PATH_TYPE)"
+    include_walk_result = list(prolog.query(include_walk_query))
+    for i in range(len(include_walk_result[0]['PATH_TYPE'])):
+        path_type_list.append(str(include_walk_result[0]['PATH_TYPE'][i]))
+
+    print("Train: " + str(train_list))
+    print ""
+    print("Train+Walk: " + str(path_type_list))
+    print ""
+    print("TrainLen: " + str(len(train_list)) + "->" + str(len(path_type_list)))
+
 
     return path_list, shortest_path_result[0]['COST']
 
